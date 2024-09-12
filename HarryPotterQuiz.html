@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hogwarts House Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            color: black;
+        }
+
+        .question, .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        button {
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px; /* Adjust spacing here */
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Hogwarts House Quiz</h1>
+    <div id="quiz-container">
+        <p id="output">Welcome to the Harry Potter Quiz! In this quiz, we will find out which house you belong to. Would you like to continue?</p>
+        <button id="start-quiz-button" onclick="startQuiz()">Yes</button>
+    </div>
+</div>
+
+<script>
+    const OutputUtil = {
+        clear: function() {
+            document.getElementById('quiz-container').innerHTML = '';
+        },
+        print: function(message) {
+            const outputElement = document.getElementById('quiz-container');
+            outputElement.innerHTML = `<p>${message}</p>`;
+        },
+        addButton: function(text, onClickAction) {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.onclick = onClickAction;
+            document.getElementById('quiz-container').appendChild(button);
+        },
+    };
+
+    let gryffindor = 0;
+    let ravenclaw = 0;
+    let hufflepuff = 0;
+    let slytherin = 0;
+    let currentQuestionIndex = 0;
+
+    const questions = [
+        { question: "Are you a brave person?", house: "gryffindor" },
+        { question: "Would you describe yourself as being patient?", house: "hufflepuff", negativeHouse: "slytherin" },
+        { question: "Are you focused and studious?", house: "ravenclaw" },
+        { question: "Have you got a creative/inventive mind?", house: "ravenclaw" },
+        { question: "Are you organized and like to plan things ahead?", house: "ravenclaw" },
+        { question: "Are you kind?", house: "gryffindor", additionalHouses: ["hufflepuff", "ravenclaw"] },
+        { question: "Are you a fair play type of person?", house: "gryffindor", additionalHouse: "hufflepuff", negativeHouse: "slytherin" },
+        { question: "Are you loyal?", house: "gryffindor", additionalHouse: "hufflepuff", negativeHouse: "slytherin" },
+        { question: "Are you competitive?", house: "gryffindor", additionalHouse: "slytherin" },
+        { question: "Do you have strong friendship values?", house: "gryffindor", additionalHouses: ["hufflepuff", "ravenclaw"] }
+    ];
+
+    function startQuiz() {
+        OutputUtil.clear();
+        showNextQuestion();
+    }
+
+    function showNextQuestion() {
+        if (currentQuestionIndex < questions.length) {
+            const questionObj = questions[currentQuestionIndex];
+            OutputUtil.print(questionObj.question);
+            OutputUtil.addButton('Yes', () => answerQuestion('yes'));
+            OutputUtil.addButton('No', () => answerQuestion('no'));
+        } else {
+            showResults();
+        }
+    }
+
+    function answerQuestion(answer) {
+        const questionObj = questions[currentQuestionIndex];
+        if (answer === 'yes') {
+            if (questionObj.house) increaseHousePoints(questionObj.house);
+            if (questionObj.additionalHouses) questionObj.additionalHouses.forEach(house => increaseHousePoints(house));
+        } else {
+            if (questionObj.negativeHouse) increaseHousePoints(questionObj.negativeHouse);
+        }
+
+        currentQuestionIndex++;
+        OutputUtil.clear();
+        showNextQuestion();
+    }
+
+    function increaseHousePoints(house) {
+        switch (house) {
+            case 'gryffindor':
+                gryffindor++;
+                break;
+            case 'ravenclaw':
+                ravenclaw++;
+                break;
+            case 'hufflepuff':
+                hufflepuff++;
+                break;
+            case 'slytherin':
+                slytherin++;
+                break;
+        }
+    }
+
+    function showResults() {
+        const maxPoints = Math.max(gryffindor, ravenclaw, hufflepuff, slytherin);
+        let resultHouse = '';
+
+        if (maxPoints === gryffindor) resultHouse = 'Gryffindor';
+        else if (maxPoints === ravenclaw) resultHouse = 'Ravenclaw';
+        else if (maxPoints === hufflepuff) resultHouse = 'Hufflepuff';
+        else resultHouse = 'Slytherin';
+
+        OutputUtil.print(`Congratulations! You belong to house <strong>${resultHouse}</strong>!`);
+    }
+</script>
+
+</body>
+</html>
